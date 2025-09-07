@@ -1,0 +1,13 @@
+﻿# Terraform state and internals
+*.tfstate
+*.tfstate.*
+.crash
+*.log
+.terraform/
+
+# Plans and archives
+*.plan
+*.zip
+
+# OS cruft
+**/.DS_Store
