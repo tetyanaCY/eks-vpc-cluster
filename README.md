@@ -59,10 +59,6 @@ terraform init -reconfigure ^
   -backend-config="region=eu-central-1" ^
   -backend-config="dynamodb_table=tf-state-locks"
 
-# Optional cost controls in vpc/main.tf:
-# single_nat_gateway = true      # one NAT for all AZs (cheaper)
-# enable_nat_gateway = false     # disable NAT for labs
-
 terraform validate
 terraform plan -out vpc.plan
 terraform apply vpc.plan
@@ -141,3 +137,4 @@ cd ..\vpc
 terraform destroy -auto-approve
 
 ------------------------------------------------------------
+
