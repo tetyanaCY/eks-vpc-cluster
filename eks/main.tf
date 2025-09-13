@@ -1,35 +1,23 @@
-provider "aws" {
-  region  = var.aws_region
-  profile = var.aws_profile
-}
-
-data "terraform_remote_state" "vpc" {
-  backend = "s3"
-  config = {
-    bucket         = var.vpc_state_bucket
-    key            = var.vpc_state_key
-    region         = var.vpc_state_region
-    dynamodb_table = "tf-state-locks"
-  }
-}
-
-locals {
-  private_subnets = data.terraform_remote_state.vpc.outputs.private_subnets
-  vpc_id          = data.terraform_remote_state.vpc.outputs.vpc_id
-}
-
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 20.24"
 
-  cluster_name                   = var.cluster_name
-  cluster_version                = var.cluster_version
-  cluster_endpoint_public_access = true
+  cluster_name    = var.cluster_name
+  cluster_version = var.cluster_version
+  enable_irsa     = true
 
-  vpc_id     = local.vpc_id
-  subnet_ids = local.private_subnets
+  vpc_id     = var.vpc_id
+  subnet_ids = var.private_subnet_ids
 
-  enable_irsa = true
+  # Avoid previous 'log group already exists' error by using a new cluster_name,
+  # or set this to false if you insist on reusing a name that already has a log group.
+  create_cloudwatch_log_group = true
+  cluster_enabled_log_types   = ["api", "audit", "authenticator"]
+
+  cluster_encryption_config = {
+    resources        = ["secrets"]
+    provider_key_arn = var.kms_key_arn
+  }
 
   eks_managed_node_groups = {
     cpu = {
@@ -46,24 +34,11 @@ module "eks" {
       min_size       = var.gpu_min_size
       max_size       = var.gpu_max_size
 
-      # важливо для GPU-нод:
       ami_type = "AL2_x86_64_GPU"
-
-      labels = {
-        workload    = "gpu"
-        accelerator = "nvidia"
-      }
-
-      taints = [{
-        key    = "nvidia.com/gpu"
-        value  = "present"
-        effect = "NO_SCHEDULE"
-      }]
+      labels   = { workload = "gpu", accelerator = "nvidia" }
+      taints   = [{ key = "nvidia.com/gpu", value = "present", effect = "NO_SCHEDULE" }]
     }
   }
 
-  tags = {
-    Project = "ml-platform"
-    Stack   = "eks"
-  }
+  tags = var.tags
 }

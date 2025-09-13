@@ -1,3 +1,1 @@
-terraform {
-  backend "s3" {}
-}
+# leave empty – backend is configured at the ROOT

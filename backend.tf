@@ -1,3 +1,4 @@
+# For homework simplicity we use local backend.
 terraform {
-  backend "s3" {}
+  backend "local" {}
 }

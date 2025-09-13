@@ -1,3 +1,1 @@
-terraform {
-  backend "s3" {}
-}
+# Intentionally empty. Backend is defined at the ROOT.

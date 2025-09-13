@@ -1,33 +1,34 @@
-provider "aws" {
-  region  = var.aws_region
-  profile = var.aws_profile
-}
-
-data "aws_availability_zones" "available" { state = "available" }
-
-locals {
-  azs             = slice(data.aws_availability_zones.available.names, 0, var.az_count)
-  public_subnets  = [for i, _ in local.azs : cidrsubnet(var.vpc_cidr, 8, i)]
-  private_subnets = [for i, _ in local.azs : cidrsubnet(var.vpc_cidr, 8, i + 16)]
-}
+data "aws_availability_zones" "available" {}
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.8"
+  version = "~> 5.21"
 
-  name            = var.vpc_name
-  cidr            = var.vpc_cidr
-  azs             = local.azs
-  public_subnets  = local.public_subnets
-  private_subnets = local.private_subnets
+  name = var.name
+  cidr = var.cidr_block
 
-  enable_nat_gateway   = true
-  single_nat_gateway   = true
-  enable_dns_hostnames = true
-  enable_dns_support   = true
+  # Pick first az_count AZs
+  azs = slice(data.aws_availability_zones.available.names, 0, var.az_count)
 
-  public_subnet_tags  = { "kubernetes.io/role/elb" = "1" }
-  private_subnet_tags = { "kubernetes.io/role/internal-elb" = "1" }
+  # Simple subnet math (adjust newbits/netnum to your scheme if needed)
+  # public:  10.0.0.0/24, 10.0.1.0/24, 10.0.2.0/24
+  public_subnets = [
+    for i in range(var.az_count) : cidrsubnet(var.cidr_block, 8, i)
+  ]
+  # private: 10.0.16.0/24, 10.0.17.0/24, 10.0.18.0/24
+  private_subnets = [
+    for i in range(var.az_count) : cidrsubnet(var.cidr_block, 8, i + 16)
+  ]
 
-  tags = { Project = "ml-platform", Stack = "vpc" }
+  enable_nat_gateway = true
+  single_nat_gateway = true
+
+  public_subnet_tags = {
+    "kubernetes.io/role/elb" = "1"
+  }
+  private_subnet_tags = {
+    "kubernetes.io/role/internal-elb" = "1"
+  }
+
+  tags = var.tags
 }

@@ -1,74 +1,51 @@
-variable "aws_region" {
-  type    = string
-  default = "eu-central-1"
-}
-
-variable "aws_profile" {
-  type    = string
-  default = null
-}
-
 variable "cluster_name" {
-  type    = string
-  default = "ml-eks"
+  type = string
 }
 
 variable "cluster_version" {
-  type    = string
-  default = "1.30"
+  type = string
 }
 
-variable "cpu_desired_size" {
-  type    = number
-  default = 2
+variable "vpc_id" {
+  type = string
 }
 
-variable "cpu_min_size" {
-  type    = number
-  default = 1
+variable "private_subnet_ids" {
+  type = list(string)
 }
 
-variable "cpu_max_size" {
-  type    = number
-  default = 4
+variable "kms_key_arn" {
+  type = string
 }
 
+variable "tags" {
+  type    = map(string)
+  default = {}
+}
+
+# node groups
 variable "cpu_instance_types" {
-  type    = list(string)
-  default = ["t3.medium"]
+  type = list(string)
 }
-
-variable "gpu_desired_size" {
-  type    = number
-  default = 1
+variable "cpu_desired_size" {
+  type = number
 }
-
-variable "gpu_min_size" {
-  type    = number
-  default = 0
+variable "cpu_min_size" {
+  type = number
 }
-
-variable "gpu_max_size" {
-  type    = number
-  default = 2
+variable "cpu_max_size" {
+  type = number
 }
 
 variable "gpu_instance_types" {
-  type    = list(string)
-  default = ["g4dn.xlarge"]
+  type = list(string)
 }
-
-variable "vpc_state_bucket" {
-  type        = string
-  description = "S3 bucket for VPC terraform state"
+variable "gpu_desired_size" {
+  type = number
 }
-
-variable "vpc_state_region" {
-  type        = string
-  description = "Region of the VPC state bucket"
+variable "gpu_min_size" {
+  type = number
 }
-
-variable "vpc_state_key" {
-  type        = string
-  description = "Key (path) to the VPC state file, e.g., envs/dev/vpc/terraform.tfstate"
+variable "gpu_max_size" {
+  type = number
 }
