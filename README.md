@@ -136,6 +136,7 @@ Fill terraform.tfvars (example values shown; adjust to your account):
   terraform apply tf.plan
 
 5.1) Configure kubectl
+
 ----------------------
   aws eks --region eu-central-1 update-kubeconfig --name ml-eks
   kubectl cluster-info
@@ -172,4 +173,5 @@ If you separate stacks, destroy EKS first, then VPC.
 
 
 "/mnt/data/README.txt"
+
 
