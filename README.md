@@ -86,37 +86,37 @@ Then re-init:
 ---------------------------------------------------------------------
 Fill terraform.tfvars (example values shown; adjust to your account):
 
-  # AWS
+  AWS
   aws_region  = "eu-central-1"
   aws_profile = "default"
 
-  # Naming
+  Naming
   cluster_name = "ml-eks"
   vpc_name     = "ml-vpc"
 
-  # VPC settings
+  VPC settings
   vpc_cidr = "10.0.0.0/16"
   az_count = 3
 
-  # Node groups
+  Node groups
   cpu_instance_types = ["t3.medium"]
   cpu_desired_size   = 2
   cpu_min_size       = 1
   cpu_max_size       = 4
 
-  # Cheapest workable GPU for labs (set desired_size=0 to save cost)
+  Cheapest workable GPU for labs (set desired_size=0 to save cost)
   gpu_instance_types = ["g4dn.xlarge"]
   gpu_desired_size   = 0     # start at zero to avoid charges
   gpu_min_size       = 0
   gpu_max_size       = 2
 
-  # KMS for secrets encryption (optional; set to "" to disable)
+  KMS for secrets encryption (optional; set to "" to disable)
   kms_key_arn = "arn:aws:kms:eu-central-1:<ACCOUNT_ID>:key/<KEY_ID>"
 
-  # Public endpoint access (limit to your IP)
+  Public endpoint access (limit to your IP)
   public_access_cidrs = ["0.0.0.0/0"]  # better: ["<YOUR.PUBLIC.IP>/32"]
 
-  # Tags
+  Tags
   tags = {
     Project = "ml-platform"
     Stack   = "infra"
@@ -127,11 +127,11 @@ Fill terraform.tfvars (example values shown; adjust to your account):
 ---------------------------------------------------------------------
   cd $HOME\eks-vpc-cluster
 
-  # Format & validate
+  Format & validate
   terraform fmt -recursive
   terraform validate
 
-  # Plan & apply
+  Plan & apply
   terraform plan -out tf.plan
   terraform apply tf.plan
 
@@ -172,3 +172,4 @@ If you separate stacks, destroy EKS first, then VPC.
 
 
 "/mnt/data/README.txt"
+
